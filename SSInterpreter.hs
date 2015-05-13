@@ -124,7 +124,8 @@ environment =
           $ insert "*"              (Native numericMult) 
           $ insert "-"              (Native numericSub) 
           $ insert "car"            (Native car)           
-          $ insert "cdr"            (Native cdr)           
+          $ insert "cdr"            (Native cdr)
+          $ insert "/"              (Native numericDiv)         
             empty
 
 type StateT = Map String LispVal
@@ -185,6 +186,10 @@ numericSum l = numericBinOp (+) l
 numericMult :: [LispVal] -> LispVal
 numericMult [] = Number 1
 numericMult l = numericBinOp (*) l
+
+numericDiv :: [LispVal] -> LispVal
+numericDiv [] = Error "wrong number of arguments."
+numericDiv l = numericBinOp (div) l
 
 numericSub :: [LispVal] -> LispVal
 numericSub [] = Error "wrong number of arguments."
