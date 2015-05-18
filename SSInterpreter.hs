@@ -131,7 +131,8 @@ environment =
           $ insert "cdr"            (Native cdr)
           $ insert "/"              (Native numericDiv)
           $ insert "mod"            (Native numericMod)
-          $ insert "cons"           (Native cons)         
+          $ insert "cons"           (Native cons)
+          $ insert "lt?"            (Native lessThan)		  
             empty
 
 type StateT = Map String LispVal
@@ -205,6 +206,10 @@ cons :: [LispVal] -> LispVal
 cons (v:(List []):[]) = List (v:[])
 cons (v:(List l):[]) = List ([v] ++ l)
 cons _  = Error "invalid list construction"
+
+lessThan :: [LispVal] -> LispVal
+lessThan ((Number a):(Number b):[]) = Bool $ a < b
+lessThan _ = Error "invalid operation for lessThan function"
 
 numericSub :: [LispVal] -> LispVal
 numericSub [] = Error "wrong number of arguments."
