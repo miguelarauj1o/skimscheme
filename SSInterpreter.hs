@@ -49,6 +49,9 @@ eval env (List (Atom "begin":[v])) = eval env v
 eval env (List (Atom "begin": l: ls)) = (eval env l) >>= (\v -> case v of { (error@(Error _)) -> return error; otherwise -> eval env (List (Atom "begin": ls))})
 eval env (List (Atom "begin":[])) = return (List [])
 eval env lam@(List (Atom "lambda":(List formals):body:[])) = return lam
+eval env (List (Atom "if":exp:cons:alt:[])) = (eval env exp) >>= (\(Bool v) -> case v of {True -> (eval env cons); otherwise -> (eval env alt)})
+eval env (List (Atom "if":exp:cons:[])) = (eval env exp) >>= (\(Bool v) -> case v of {True -> (eval env cons); otherwise -> return $ List []})
+
 -- The following line is slightly more complex because we are addressing the
 -- case where define is redefined by the user (whatever is the user's reason
 -- for doing so. The problem is that redefining define does not have
