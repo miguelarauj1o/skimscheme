@@ -129,7 +129,8 @@ environment =
           $ insert "car"            (Native car)           
           $ insert "cdr"            (Native cdr)
           $ insert "/"              (Native numericDiv)
-          $ insert "mod"            (Native numericMod)         
+          $ insert "mod"            (Native numericMod)
+          $ insert "cons"           (Native cons)         
             empty
 
 type StateT = Map String LispVal
@@ -198,6 +199,11 @@ numericDiv l = numericBinOp (div) l
 numericMod :: [LispVal] -> LispVal
 numericMod [] = Error "wrong number of arguments"
 numericMod l = numericBinOp (mod) l
+
+cons :: [LispVal] -> LispVal
+cons (v:(List []):[]) = List (v:[])
+cons (v:(List l):[]) = List ([v] ++ l)
+cons _  = Error "invalid list construction"
 
 numericSub :: [LispVal] -> LispVal
 numericSub [] = Error "wrong number of arguments."
