@@ -216,10 +216,12 @@ equivalence :: [LispVal] -> LispVal
 equivalence ((Bool a):(Bool b):[]) = Bool $ a == b
 equivalence ((String a):(String b):[]) = Bool $ a == b
 equivalence ((Number a):(Number b):[]) = Bool $ a == b
-equivalence ((Char a):(Char b):[]) = Bool $ a == b
 equivalence ((Atom a):(Atom b):[]) = Bool $ a == b
 equivalence ((List []):(List []):[]) = Bool True
-equivalence ((List (h1:t1):(List (h2:t2):[]))) = Bool $ (equivalence [h1, h2]) and (equivalence [List t1, List t2])
+equivalence ((List (h1:t1):(List (h2:t2):[]))) = Bool $ (l1 && l2)
+	where
+		(Bool l1) = (equivalence [h1, h2])
+		(Bool l2) = (equivalence [List t1, List t2])
 equivalence (_:_:[]) = Bool False
 equivalence _ = Error "invalid operation in equivalence function"
 
