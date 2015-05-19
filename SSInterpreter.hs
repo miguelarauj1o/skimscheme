@@ -132,7 +132,8 @@ environment =
           $ insert "/"              (Native numericDiv)
           $ insert "mod"            (Native numericMod)
           $ insert "cons"           (Native cons)
-          $ insert "lt?"            (Native lessThan)		  
+          $ insert "lt?"            (Native lessThan)
+          $ insert "eqv?"           (Native equivalence)		  
             empty
 
 type StateT = Map String LispVal
@@ -210,6 +211,17 @@ cons _  = Error "invalid list construction"
 lessThan :: [LispVal] -> LispVal
 lessThan ((Number a):(Number b):[]) = Bool $ a < b
 lessThan _ = Error "invalid operation for lessThan function"
+
+equivalence :: [LispVal] -> LispVal
+equivalence ((Bool a):(Bool b):[]) = Bool $ a == b
+equivalence ((String a):(String b):[]) = Bool $ a == b
+equivalence ((Number a):(Number b):[]) = Bool $ a == b
+equivalence ((Char a):(Char b):[]) = Bool $ a == b
+equivalence ((Atom a):(Atom b):[]) = Bool $ a == b
+equivalence ((List []):(List []):[]) = Bool True
+equivalence ((List (h1:t1):(List (h2:t2):[]))) = Bool $ (equivalence [h1, h2]) and (equivalence [List t1, List t2])
+equivalence (_:_:[]) = Bool False
+equivalence _ = Error "invalid operation in equivalence function"
 
 numericSub :: [LispVal] -> LispVal
 numericSub [] = Error "wrong number of arguments."
