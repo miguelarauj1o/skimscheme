@@ -70,7 +70,6 @@ stateLookup env var = ST $
            id (Map.lookup var (union s env) 
     ), s))
 
-
 -- Because of monad complications, define is a separate function that is not
 -- included in the state of the program. This saves  us from having to make
 -- every predefined function return a StateTransformer, which would also
@@ -87,7 +86,6 @@ defineVar env id val =
                 (result, newState) = f s
             in (result, (insert id result newState))
      )
-
 
 -- The maybe function yields a value of type b if the evaluation of 
 -- its third argument yields Nothing. In case it yields Just x, maybe
@@ -112,7 +110,6 @@ lambda :: StateT -> [LispVal] -> LispVal -> [LispVal] -> StateTransformer LispVa
 lambda env formals body args = 
   let dynEnv = Prelude.foldr (\(Atom f, a) m -> Map.insert f a m) env (zip formals args)
   in  eval dynEnv body
-
 
 -- Initial environment of the programs. Maps identifiers to values. 
 -- Initially, maps function names to function values, but there's 
@@ -218,10 +215,8 @@ equivalence ((String a):(String b):[]) = Bool $ a == b
 equivalence ((Number a):(Number b):[]) = Bool $ a == b
 equivalence ((Atom a):(Atom b):[]) = Bool $ a == b
 equivalence ((List []):(List []):[]) = Bool True
-equivalence ((List (h1:t1):(List (h2:t2):[]))) = Bool $ (l1 && l2)
-	where
-		(Bool l1) = (equivalence [h1, h2])
-		(Bool l2) = (equivalence [List t1, List t2])
+equivalence ((List (h1:t1):(List (h2:t2):[]))) = Bool $ (l1 && l2) where (Bool l1) = (equivalence [h1, h2]) (Bool l2) = (equivalence [List t1, List t2])
+equivalence ((DottedList (h1:t1):(DottedList (h2:t2):[]))) = Bool $ (l1 && l2) where (Bool l1) = (equivalence [h1, h2]) (Bool l2) = (equivalence [List t1, List t2])
 equivalence (_:_:[]) = Bool False
 equivalence _ = Error "invalid operation in equivalence function"
 
