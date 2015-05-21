@@ -52,6 +52,7 @@ eval env lam@(List (Atom "lambda":(List formals):body:[])) = return lam
 eval env (List (Atom "if":exp:cons:alt:[])) = (eval env exp) >>= (\(Bool v) -> case v of {True -> (eval env cons); otherwise -> (eval env alt)})
 eval env (List (Atom "if":exp:cons:[])) = (eval env exp) >>= (\(Bool v) -> case v of {True -> (eval env cons); otherwise -> return $ List []})
 eval env (List (Atom "comment":_)) = return $ List []
+eval env (List (Atom "set!":(Atom val):exp:[])) = (stateLookup env val) >>= (\v -> case v of {Error v -> return $ (Error "variable does not exist."); otherwise -> (defineVar env val exp)})
 
 -- The following line is slightly more complex because we are addressing the
 -- case where define is redefined by the user (whatever is the user's reason
@@ -78,9 +79,9 @@ stateLookup env var = ST $
 -- beast.
 define :: StateT -> [LispVal] -> StateTransformer LispVal
 define env [(Atom id), val] = defineVar env id val
-define env [(List [Atom id]), val] = defineVar env id val
--- define env [(List l), val]                                       
+define env [(List [Atom id]), val] = defineVar env id val                                       
 define env args = return (Error "wrong number of arguments")
+
 defineVar env id val = 
   ST (\s -> let (ST f)    = eval env val
                 (result, newState) = f s
