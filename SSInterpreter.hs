@@ -53,6 +53,10 @@ eval env (List (Atom "if":exp:cons:alt:[])) = (eval env exp) >>= (\(Bool v) -> c
 eval env (List (Atom "if":exp:cons:[])) = (eval env exp) >>= (\(Bool v) -> case v of {True -> (eval env cons); otherwise -> return $ List []})
 eval env (List (Atom "comment":_)) = return $ List []
 eval env (List (Atom "set!":(Atom val):exp:[])) = (stateLookup env val) >>= (\v -> case v of {Error v -> return $ (Error "variable does not exist."); otherwise -> (defineVar env val exp)})
+eval env (List (Atom "let":bin:bod:[])) = let 
+                                            args = map (\[var, init] -> let (ST m) = eval env init; (t, newEnv) = m env in (var, t)) bin
+                                            dynEnv = Prelude.foldr (\(Atom f, a) m -> Map.insert f a m) empty args
+                                            
 
 -- The following line is slightly more complex because we are addressing the
 -- case where define is redefined by the user (whatever is the user's reason
@@ -61,7 +65,7 @@ eval env (List (Atom "set!":(Atom val):exp:[])) = (stateLookup env val) >>= (\v 
 -- stored as a regular function because of its return type.
 eval env (List (Atom "define": args)) = maybe (define env args) (\v -> return v) (Map.lookup "define" env)
 eval env (List (Atom func : args)) = mapM (eval env) args >>= apply env func 
-eval env (Error s)  = return (Error s)
+eval env (Error s) = return (Error s)
 eval env form = return (Error ("Could not eval the special form: " ++ (show form)))
 
 stateLookup :: StateT -> String -> StateTransformer LispVal
@@ -83,7 +87,7 @@ define env [(List [Atom id]), val] = defineVar env id val
 define env args = return (Error "wrong number of arguments")
 
 defineVar env id val = 
-  ST (\s -> let (ST f)    = eval env val
+  ST (\s -> let (ST f) = eval env val
                 (result, newState) = f s
             in (result, (insert id result newState))
      )
@@ -95,7 +99,7 @@ defineVar env id val =
 apply :: StateT -> String -> [LispVal] -> StateTransformer LispVal
 apply env func args =  
                   case (Map.lookup func env) of
-                      Just (Native f)  -> return (f args)
+                      Just (Native f) -> return (f args)
                       otherwise -> 
                         (stateLookup env func >>= \res -> 
                           case res of 
