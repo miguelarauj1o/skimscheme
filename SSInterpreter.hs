@@ -53,7 +53,7 @@ eval env (List (Atom "if":exp:cons:alt:[])) = (eval env exp) >>= (\(Bool v) -> c
 eval env (List (Atom "if":exp:cons:[])) = (eval env exp) >>= (\(Bool v) -> case v of {True -> (eval env cons); otherwise -> return $ List []})
 eval env (List (Atom "comment":_)) = return $ List []
 eval env (List (Atom "set!":(Atom val):exp:[])) = (stateLookup env val) >>= (\v -> case v of {Error v -> return $ (Error "variable does not exist."); otherwise -> (defineVar env val exp)})
-eval env (List (Atom "let":(List bin):bod:[])) = let args = Prelude.map (\[var, init] -> let (ST m) = eval env init; (t, newEnv) = m env in (var, t)) bin
+eval env (List (Atom "let":(List bin):bod:[])) = let args = Prelude.map (\(List [var, init]) -> let (ST m) = eval env init; (t, newEnv) = m env in (var, t)) bin
                                                      dynEnv = Prelude.foldr (\(Atom f, a) m -> Map.insert f a m) empty args
                                                      (ST f) = eval (union dynEnv env) bod
                                                  in ST (\s -> let (r, newS) = f s
