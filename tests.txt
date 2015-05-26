@@ -1,0 +1,19 @@
+-- 1 -> comment, if, eqv?, /, mod
+-- OK
+"(begin (comment LOL) (if (eqv? (/ 1 1) (mod 5 4)) '(OK)))"
+
+-- 2 -> ifelse, eqv?, /, mod, cons
+-- (0 1 2 3 4)
+"(begin (if (eqv? (/ 3 1) (mod 5 4)) '(OK) (cons (mod 10 5) '(1 2 3 4))))"
+
+-- 3 -> let, /, if, eqv?, set!, mod
+-- 4
+"(begin (let ((x (/ 4 2)) (y 3)) (if (eqv? x (mod 5 3)) (set! y (mod 10 6)) y)))"
+
+-- 4 -> set!, lt?, mod, /
+-- #t
+"(begin (define x 10) (set! x 2) (lt? (mod x 1) (/ 1 1)))"
+
+-- 5 -> recursion, lt?, /, mod
+-- #f
+"(begin (define fat (lambda (n) (if (eqv? n (/ (mod 5 4) 1)) 1 (* n (fat (- n 1)))))) (lt? (fat 5) 100))"
