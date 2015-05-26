@@ -46,17 +46,19 @@ eval env val@(Number _) = return val
 eval env val@(Bool _) = return val
 eval env (List [Atom "quote", val]) = return val
 eval env (List (Atom "begin":[v])) = eval env v
-eval env (List (Atom "begin": l: ls)) = (eval env l) >>= (\v -> case v of { (error@(Error _)) -> return error; otherwise -> eval env (List (Atom "begin": ls))})
+eval env (List (Atom "begin": l: ls)) = (eval env l) >>= (\v -> case v of {(error@(Error _)) -> return error; otherwise -> eval env (List (Atom "begin": ls))})
 eval env (List (Atom "begin":[])) = return (List [])
 eval env lam@(List (Atom "lambda":(List formals):body:[])) = return lam
 eval env (List (Atom "if":exp:cons:alt:[])) = (eval env exp) >>= (\(Bool v) -> case v of {True -> (eval env cons); otherwise -> (eval env alt)})
 eval env (List (Atom "if":exp:cons:[])) = (eval env exp) >>= (\(Bool v) -> case v of {True -> (eval env cons); otherwise -> return $ List []})
 eval env (List (Atom "comment":_)) = return $ List []
 eval env (List (Atom "set!":(Atom val):exp:[])) = (stateLookup env val) >>= (\v -> case v of {Error v -> return $ (Error "variable does not exist."); otherwise -> (defineVar env val exp)})
-eval env (List (Atom "let":bin:bod:[])) = let 
-                                            args = map (\[var, init] -> let (ST m) = eval env init; (t, newEnv) = m env in (var, t)) bin
-                                            dynEnv = Prelude.foldr (\(Atom f, a) m -> Map.insert f a m) empty args
-                                            
+eval env (List (Atom "let":bin:bod:[])) = let args = Prelude.map (\[var, init] -> let (ST m) = eval env init; (t, newEnv) = m env in (var, t)) bin
+                                              dynEnv = Prelude.foldr (\(Atom f, a) m -> Map.insert f a m) empty args
+                                              (ST f) = eval (union dynEnv env) bod
+                                          in ST (\s -> let (v, newS) = f s;
+                                                           finEnv = (union (difference newS dynEnv) s);
+                                                       in (v, finEnv))														   
 
 -- The following line is slightly more complex because we are addressing the
 -- case where define is redefined by the user (whatever is the user's reason
