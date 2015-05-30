@@ -137,7 +137,8 @@ environment =
           $ insert "mod"            (Native numericMod)
           $ insert "cons"           (Native cons)
           $ insert "lt?"            (Native lessThan)
-          $ insert "eqv?"           (Native equivalence)		  
+          $ insert "eqv?"           (Native equivalence)
+          $ insert "append"         (Native append)          	  
             empty
 
 type StateT = Map String LispVal
@@ -214,7 +215,7 @@ cons _  = Error "invalid list construction"
 
 lessThan :: [LispVal] -> LispVal
 lessThan ((Number a):(Number b):[]) = Bool $ a < b
-lessThan _ = Error "invalid operation for lessThan function"
+lessThan _ = Error "invalid operation in lessThan function"
 
 equivalence :: [LispVal] -> LispVal
 equivalence ((Bool a):(Bool b):[]) = Bool $ a == b
@@ -232,6 +233,10 @@ equivalence ((DottedList l1 x1):(DottedList l2 x2):[]) = Bool $ (x && l)
     (Bool l) = (equivalence [List l1, List l2])
 equivalence (_:_:[]) = Bool False
 equivalence _ = Error "invalid operation in equivalence function"
+
+append :: [LispVal] -> LispVal
+append ((List a):(List b):[]) = List (a ++ b)
+append _ = "invalid operation in append function"
 
 numericSub :: [LispVal] -> LispVal
 numericSub [] = Error "wrong number of arguments."
