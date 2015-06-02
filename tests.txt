@@ -18,41 +18,22 @@
 -- #f
 "(begin (define fat (lambda (n) (if (eqv? n (/ (mod 5 4) 1)) 1 (* n (fat (- n 1)))))) (lt? (fat 5) 100))"
 
--- 6 -> let, mod, /
--- 
-"(begin (define x 10) (let ((x (/50 10)) (y (* x (mod 7 5)))) (+ x y)))"
-
--- 7 -> let, set!, /, mod
--- 
-(begin (let ((x (/ 45 9)) (y (mod 10 5))) (set! x (+ x (set! y (+ x x))))))
-
--- 8 -> if, eqv?, /, mod
--- 
-"(begin (define fib (lambda (n) (if (eqv? n (/ 4 2)) 0 (if (eqv? n (mod 8 7)) 1 (+ (fib (- n 1)) (fib (- n 2))))))) (fib 4))"
-
--- 9 -> let, set!, cons, /, mod
--- 
-"(begin (define x 5) (define y (/ 100 10)) (define res -1) (let ((x 8)) (begin (set! res 10) (let ((z 5) (y 21)) (begin (set! x (mod 7 4)) (set! y 12))) (set! y x))) (define lista (cons x (cons y (cons res '())))))"
-
--- 10 -> make-closure, let, set!, mod, /
+-- 6 -> make-closure, let, set!, mod, /
 -- 
 "(begin (let ((i (mod 5 4))) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i))))) (define val1 (f 1)) (define val2 (f 2)) (/ val1 val2))"
 
--- 11 ->
+-- 7 -> make-closure, let, set!, if, lt?, /, mod
 --
-""
+"(begin (let ((i 2)) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i))))) (if (lt? (f (/ 239 12)) (f (mod 239 12))) 1 0))"
 
--- 12 ->
+-- 8 -> make-closure, let, set!, eqv?, mod, /
 --
-""
+"(begin (let ((i (mod 5 4)) (j (/ 16 4))) (define clo (make-closure (lambda (x y) (begin (set! x (+ i j)) (set! j (+ x y)) j))))) (define clo1 (clo 1 2)) (define clo2 (clo 1 2)) (eqv? clo1 clo2))" 
 
--- 13 ->
+-- 9 -> make-closure, let, set!, mod
 --
-""
+"(begin (let ((i (mod 5 4))) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i) )))) f)"
 
--- 14 ->
+-- 10 -> quicksort
 --
-""
 
--- 15 -> quicksort
-""
