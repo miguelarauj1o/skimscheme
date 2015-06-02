@@ -1,5 +1,6 @@
-module LispVal (LispVal(Atom, List, DottedList, Number, String, Bool, Error, Native)) where
+module LispVal (LispVal(Atom, List, DottedList, Number, String, Bool, Error, Native, Closure)) where
 
+import Data.Map as Map
 
 -----------------------------------------------------------
 --                    BASIC DATATYPES                    --
@@ -20,3 +21,4 @@ data LispVal = Atom String
   | Bool Bool
   | Error String
   | Native ([LispVal] -> LispVal)
+  | Closure (Map String LispVal)
