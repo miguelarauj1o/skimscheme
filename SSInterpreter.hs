@@ -236,7 +236,7 @@ equivalence _ = Error "invalid operation in equivalence function"
 
 append :: [LispVal] -> LispVal
 append ((List a):(List b):[]) = List (a ++ b)
-append _ = "invalid operation in append function"
+append _ = Error "invalid operation in append function"
 
 numericSub :: [LispVal] -> LispVal
 numericSub [] = Error "wrong number of arguments."
