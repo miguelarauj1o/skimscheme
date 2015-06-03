@@ -19,20 +19,20 @@
 "(begin (define fat (lambda (n) (if (eqv? n (/ (mod 5 4) 1)) 1 (* n (fat (- n 1)))))) (lt? (fat 5) 100))"
 
 -- 6 -> make-closure, let, set!, mod, /
--- 
+-- 0
 "(begin (let ((i (mod 5 4))) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i))))) (define val1 (f 1)) (define val2 (f 2)) (/ val1 val2))"
 
 -- 7 -> make-closure, let, set!, if, lt?, /, mod
---
+-- 1
 "(begin (let ((i 2)) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i))))) (if (lt? (f (/ 239 12)) (f (mod 239 12))) 1 0))"
 
 -- 8 -> make-closure, let, set!, eqv?, mod, /
---
+-- #f
 "(begin (let ((i (mod 5 4)) (j (/ 16 4))) (define clo (make-closure (lambda (x y) (begin (set! x (+ i j)) (set! j (+ x y)) j))))) (define clo1 (clo 1 2)) (define clo2 (clo 1 2)) (eqv? clo1 clo2))" 
 
 -- 9 -> make-closure, let, set!, mod
---
+-- retorna a própria clausura
 "(begin (let ((i (mod 5 4))) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i) )))) f)"
 
 -- 10 -> quicksort
-"(begin (define part (lambda (comp l) (if (eqv? l '()) '() (if (comp (car l)) (cons (car l) (part comp (cdr l))) (part comp (cdr l)))))) (define qsort (lambda (l) (if (eqv? l '()) '() (let ((p (car l))) (append (append (qsort (part (lambda (x) (lt? x p)) l)) (part (lambda (x) (eqv? x p)) l)) (qsort (part (lambda (x) (lt? p x)) l))))))) (qsort '(19 38 17 26 45 4 34 21 1 0 1 123)))
+"(begin (define part (lambda (comp l) (if (eqv? l '()) '() (if (comp (car l)) (cons (car l) (part comp (cdr l))) (part comp (cdr l)))))) (define qsort (lambda (l) (if (eqv? l '()) '() (let ((p (car l))) (append (append (qsort (part (lambda (x) (lt? x p)) l)) (part (lambda (x) (eqv? x p)) l)) (qsort (part (lambda (x) (lt? p x)) l))))))) (qsort '(19 38 17 26 45 4 34 21 1 0 1 123)))"
