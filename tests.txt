@@ -35,5 +35,4 @@
 "(begin (let ((i (mod 5 4))) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i) )))) f)"
 
 -- 10 -> quicksort
---
-
+"(begin (define part (lambda (comp l) (if (eqv? l '()) '() (if (comp (car l)) (cons (car l) (part comp (cdr l))) (part comp (cdr l)))))) (define qsort (lambda (l) (if (eqv? l '()) '() (let ((p (car l))) (append (append (qsort (part (lambda (x) (lt? x p)) l)) (part (lambda (x) (eqv? x p)) l)) (qsort (part (lambda (x) (lt? p x)) l))))))) (qsort '(19 38 17 26 45 4 34 21 1 0 1 123)))
