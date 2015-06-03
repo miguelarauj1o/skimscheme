@@ -59,6 +59,7 @@ eval env (List (Atom "let":(List bin):bod:[])) = let args = Prelude.map (\(List 
                                                  in ST (\s -> let (r, newS) = f s
                                                                   finS = union (difference newS dynEnv) env
                                                               in (r, finS))
+eval env (List (Atom "make-closure":lam@(List (Atom "lambda":(List formals):body:[])):[]) =   
 
 -- The following line is slightly more complex because we are addressing the
 -- case where define is redefined by the user (whatever is the user's reason
