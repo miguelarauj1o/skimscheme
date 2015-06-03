@@ -85,7 +85,7 @@ stateLookup :: StateT -> String -> StateTransformer LispVal
 stateLookup env var = ST $ 
   (\s -> 
     (maybe (Error "variable does not exist.") 
-           id (Map.lookup var (union s env) 
+           id (Map.lookup var (union env s) 
     ), s))
 
 -- Because of monad complications, define is a separate function that is not
