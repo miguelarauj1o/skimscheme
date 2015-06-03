@@ -1,10 +1,11 @@
-module LispVal (LispVal(Atom, List, DottedList, Number, String, Bool, Error, Native, Closure)) where
+module LispVal (LispVal(Atom, List, DottedList, Number, String, Bool, Error, Native, Env), StateT) where
 
 import Data.Map as Map
 
 -----------------------------------------------------------
 --                    BASIC DATATYPES                    --
 -----------------------------------------------------------
+
 {- 
 In Lisp, the data types representing code structures are the same as the
 data types representing values. This somewhat simplifies the
@@ -13,6 +14,9 @@ different datatypes to represent structures that appear in the code
 (statements, expressions, declarations, etc.) and the data that their
 evaluation produces.
 -}
+
+type StateT = Map String LispVal
+
 data LispVal = Atom String
   | List [ LispVal ]
   | DottedList [ LispVal ] LispVal
@@ -21,4 +25,4 @@ data LispVal = Atom String
   | Bool Bool
   | Error String
   | Native ([LispVal] -> LispVal)
-  | Closure (Map String LispVal)
+  | Env StateT
