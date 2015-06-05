@@ -14,25 +14,46 @@
 -- #t
 "(begin (define x 10) (set! x 2) (lt? (mod x 1) (/ 1 1)))"
 
--- 5 -> recursion, lt?, /, mod
+-- 5 -> lt?, /, mod
 -- #f
 "(begin (define fat (lambda (n) (if (eqv? n (/ (mod 5 4) 1)) 1 (* n (fat (- n 1)))))) (lt? (fat 5) 100))"
 
--- 6 -> make-closure, let, set!, mod, /
+-- 6 -> let, /
+-- 25
+"(begin (define x (/ 100 10)) (let ((x (/ 45 9)) (y (* x 2))) (+ x y)))"
+
+-- 7 -> comment, if, eqv?, mod
+-- 3
+"(begin (define n (mod 10 5)) (comment LOL) (define fib (lambda (n) (if (eqv? n 0) 0 (if (eqv? n 1) 1 (+ (fib (- n 1)) (fib (- n 2))))))) (fib 4))"
+
+-- 8 -> if, lt?, cons, /
+-- (7, 8, 9, 10)
+"(begin (define m (lambda (n) (if (lt? (/ 45 5) n) (cons n '(7 8 9 10)) '(7 8 9 10)))) (m 6))"
+
+-- 9 -> if, eqv?, lt?
+-- 6
+"(begin (define mdc (lambda (a b) (if (eqv? a 0) b (if (eqv? b 0) a (if (lt? b a) (mdc (- a b) b) (mdc a (- b a)) ))))) (mdc 18 24))"
+
+-- 10 -> make-closure, let, set!, mod, comment, /
+-- #t
+"(begin (let ((a (/ 2 2))) (define div2 (make-closure (lambda (x) (begin (set! a (mod x 2))))))) (let ((b 1)) (define div3 (make-closure (lambda (y) (begin (set! b (mod y 3))))))) (define div6 (lambda (z) (if (eqv? (div2 z) 0) (if (eqv? (div3 z) 0) #t #f) #f))) (comment LOL) (div6 24))"
+
+-- 11 -> make-closure, let, set!, mod, /
 -- 0
 "(begin (let ((i (mod 5 4))) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i))))) (define val1 (f 1)) (define val2 (f 2)) (/ val1 val2))"
 
--- 7 -> make-closure, let, set!, if, lt?, /, mod
+-- 12 -> make-closure, let, set!, if, lt?, /, mod
 -- 1
 "(begin (let ((i 2)) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i))))) (if (lt? (f (/ 239 12)) (f (mod 239 12))) 1 0))"
 
--- 8 -> make-closure, let, set!, eqv?, mod, /
+-- 13 -> make-closure, let, set!, eqv?, mod, /
 -- #f
 "(begin (let ((i (mod 5 4)) (j (/ 16 4))) (define clo (make-closure (lambda (x y) (begin (set! x (+ i j)) (set! j (+ x y)) j))))) (define clo1 (clo 1 2)) (define clo2 (clo 1 2)) (eqv? clo1 clo2))" 
 
--- 9 -> make-closure, let, set!, mod
+-- 14 -> make-closure, let, set!, mod
 -- retorna a própria clausura
 "(begin (let ((i (mod 5 4))) (define f (make-closure (lambda (y) (begin (set! i (+ i y)) i) )))) f)"
 
--- 10 -> quicksort
+-- 15 -> quicksort
+-- (0 1 1 4 17 19 21 26 34 38 45 123)
 "(begin (define part (lambda (comp l) (if (eqv? l '()) '() (if (comp (car l)) (cons (car l) (part comp (cdr l))) (part comp (cdr l)))))) (define qsort (lambda (l) (if (eqv? l '()) '() (let ((p (car l))) (append (append (qsort (part (lambda (x) (lt? x p)) l)) (part (lambda (x) (eqv? x p)) l)) (qsort (part (lambda (x) (lt? p x)) l))))))) (qsort '(19 38 17 26 45 4 34 21 1 0 1 123)))"
